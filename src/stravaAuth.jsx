@@ -2,14 +2,43 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 const clientSecret = import.meta.env.VITE_STRAVA_CLIENT_SECRET;
 
-console.log("reading:", import.meta.env.VITE_APP_URL);
 const getRedirectUri = () => {
-  // Use the VITE_APP_URL environment variable if set, otherwise use the current origin
-  return import.meta.env.VITE_APP_URL || window.location.origin;
+  let uri;
+  if (import.meta.env.VITE_APP_URL) {
+    uri = import.meta.env.VITE_APP_URL;
+    console.log("Using VITE_APP_URL:", uri);
+  } else {
+    uri = window.location.origin;
+    console.log("VITE_APP_URL not found, using window.location.origin:", uri);
+  }
+
+  // Ensure the URI has a protocol
+  if (!uri.startsWith("http://") && !uri.startsWith("https://")) {
+    uri = `https://${uri}`;
+  }
+
+  // Remove any trailing slash
+  uri = uri.replace(/\/$/, "");
+
+  console.log("Final Redirect URI:", uri);
+  return uri;
 };
 
 const StravaAuth = ({ clientId, onTokenReceived }) => {
   const [authorizationCode, setAuthorizationCode] = useState(null);
+
+  useEffect(() => {
+    if (import.meta.env.VITE_DEBUG === "true") {
+      console.log("Debug Information:");
+      console.log("VITE_APP_URL:", import.meta.env.VITE_APP_URL);
+      console.log(
+        "VITE_STRAVA_CLIENT_ID:",
+        import.meta.env.VITE_STRAVA_CLIENT_ID,
+      );
+      console.log("window.location.origin:", window.location.origin);
+      console.log("window.location.href:", window.location.href);
+    }
+  }, []);
 
   useEffect(() => {
     // Check if there's an authorization code in the URL
