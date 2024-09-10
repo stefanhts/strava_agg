@@ -4,6 +4,7 @@ const clientSecret = import.meta.env.VITE_STRAVA_CLIENT_SECRET;
 
 const getRedirectUri = () => {
   // Use the VITE_APP_URL environment variable if set, otherwise use the current origin
+  console.log("reading:", import.meta.VITE_APP_URL);
   return import.meta.env.VITE_APP_URL || window.location.origin;
 };
 
